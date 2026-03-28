@@ -100,25 +100,58 @@
         The rest of the markup stays the same.
       -->
       <form id="waitlist-form" class="waitlist-form" novalidate>
-        <div class="form-row">
+        <div class="form-row form-row--two">
+          <input
+            type="text"
+            id="first-name"
+            name="first_name"
+            class="form-input"
+            placeholder="First name"
+            required
+            autocomplete="given-name"
+            aria-label="First name"
+          />
+          <input
+            type="text"
+            id="last-name"
+            name="last_name"
+            class="form-input"
+            placeholder="Last name"
+            required
+            autocomplete="family-name"
+            aria-label="Last name"
+          />
+        </div>
+        <div class="form-row form-row--single">
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            class="form-input"
+            placeholder="Phone number"
+            required
+            autocomplete="tel"
+            aria-label="Phone number"
+          />
+        </div>
+        <div class="form-row form-row--single">
           <input
             type="email"
             id="email"
             name="email"
             class="form-input"
-            placeholder="your@email.com"
-            required
+            placeholder="Email (optional)"
             autocomplete="email"
             aria-label="Email address"
           />
-          <button type="submit" class="btn btn--primary">Claim My Spot</button>
+        </div>
+        <div class="form-row form-row--submit">
+          <button type="submit" class="btn btn--primary btn--full">Claim My Spot</button>
         </div>
         <p class="form-success" id="form-success" aria-live="polite" hidden>
           You're on the list. We'll reach out when Ruckus hits your city. 🙌
         </p>
-        <p class="form-error" id="form-error" aria-live="polite" hidden>
-          Please enter a valid email address.
-        </p>
+        <p class="form-error" id="form-error" aria-live="polite" hidden></p>
       </form>
 
       <p class="waitlist-reassurance">No spam. Just your invite when we launch in your city.</p>

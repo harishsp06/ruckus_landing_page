@@ -31,6 +31,27 @@
   --transition-normal: 300ms ease;
 }
 
+/* ── Cursor Glow ────────────────────────────────────────────── */
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 98, 0, 0.07) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  will-change: transform;
+}
+
+/* Hide on touch devices — they have no cursor */
+@media (hover: none) {
+  .cursor-glow { display: none; }
+}
+
 /* ── Reset ──────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -439,17 +460,33 @@ a {
 /* Form */
 .waitlist-form {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .form-row {
   display: flex;
   gap: var(--space-xs);
-  flex-wrap: wrap;
+  width: 100%;
+}
+
+.form-row--two .form-input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.form-row--single .form-input,
+.form-row--submit .btn {
+  width: 100%;
+}
+
+.btn--full {
+  width: 100%;
   justify-content: center;
 }
 
 .form-input {
-  flex: 1 1 240px;
   padding: 0.85em 1.2em;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -543,13 +580,12 @@ a {
     padding: var(--space-sm);
   }
 
-  .form-row {
+  /* Stack the first/last name row on small screens */
+  .form-row--two {
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .form-input,
-  .waitlist-form .btn {
+  .form-row--two .form-input {
     width: 100%;
   }
 

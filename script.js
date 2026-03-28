@@ -2,7 +2,16 @@
    RUCKUS — Landing Page Scripts
    ───────────────────────────────────────────────────────────── */
 
-/* ── 1. Smooth Scroll ───────────────────────────────────────── */
+/* ── 1. Cursor Glow ─────────────────────────────────────────── */
+const glow = document.createElement('div');
+glow.classList.add('cursor-glow');
+document.body.appendChild(glow);
+
+document.addEventListener('mousemove', e => {
+  glow.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
+});
+
+/* ── 2. Smooth Scroll ───────────────────────────────────────── */
 document.querySelectorAll('.js-smooth-scroll').forEach(link => {
   link.addEventListener('click', e => {
     const href = link.getAttribute('href');
@@ -14,10 +23,9 @@ document.querySelectorAll('.js-smooth-scroll').forEach(link => {
   });
 });
 
-/* ── 2. Scroll-triggered animations (IntersectionObserver) ─── */
+/* ── 3. Scroll-triggered animations (IntersectionObserver) ─── */
 const animatedEls = document.querySelectorAll('[data-animate]');
 
-// Assign stagger delays before observing
 animatedEls.forEach((el, index) => {
   el.style.animationDelay = `${index * 180}ms`;
 });
@@ -27,7 +35,7 @@ const observer = new IntersectionObserver(
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target); // fire once only
+        observer.unobserve(entry.target);
       }
     });
   },
@@ -39,31 +47,64 @@ const observer = new IntersectionObserver(
 
 animatedEls.forEach(el => observer.observe(el));
 
-/* ── 3. Waitlist Form ───────────────────────────────────────── */
-const form       = document.getElementById('waitlist-form');
-const emailInput = document.getElementById('email');
-const successMsg = document.getElementById('form-success');
-const errorMsg   = document.getElementById('form-error');
-const submitBtn  = form ? form.querySelector('[type="submit"]') : null;
+/* ── 4. Waitlist Form ───────────────────────────────────────── */
+const form        = document.getElementById('waitlist-form');
+const firstInput  = document.getElementById('first-name');
+const lastInput   = document.getElementById('last-name');
+const phoneInput  = document.getElementById('phone');
+const emailInput  = document.getElementById('email');
+const successMsg  = document.getElementById('form-success');
+const errorMsg    = document.getElementById('form-error');
+const submitBtn   = form ? form.querySelector('[type="submit"]') : null;
 
-// Permissive email pattern — catches obvious typos
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Accepts digits, spaces, dashes, parens, +  — e.g. (312) 555-0100, +1 312 555 0100
+const PHONE_RE = /^[\d\s\-().+]{7,20}$/;
+
+function setInvalid(input, msg) {
+  input.classList.add('is-invalid');
+  errorMsg.textContent = msg;
+  errorMsg.hidden = false;
+  input.focus();
+}
+
+function clearErrors() {
+  [firstInput, lastInput, phoneInput, emailInput].forEach(i => {
+    if (i) i.classList.remove('is-invalid');
+  });
+  errorMsg.hidden = true;
+  errorMsg.textContent = '';
+  successMsg.hidden = true;
+}
 
 if (form) {
   form.addEventListener('submit', e => {
     e.preventDefault();
+    clearErrors();
 
-    // Reset previous state
-    emailInput.classList.remove('is-invalid');
-    successMsg.hidden = true;
-    errorMsg.hidden   = true;
+    const first = firstInput.value.trim();
+    const last  = lastInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const email = emailInput.value.trim();
 
-    const value = emailInput.value.trim();
-
-    if (!EMAIL_RE.test(value)) {
-      emailInput.classList.add('is-invalid');
-      errorMsg.hidden = false;
-      emailInput.focus();
+    if (!first) {
+      setInvalid(firstInput, 'First name is required.');
+      return;
+    }
+    if (!last) {
+      setInvalid(lastInput, 'Last name is required.');
+      return;
+    }
+    if (!phone) {
+      setInvalid(phoneInput, 'Phone number is required.');
+      return;
+    }
+    if (!PHONE_RE.test(phone)) {
+      setInvalid(phoneInput, 'Please enter a valid phone number.');
+      return;
+    }
+    if (email && !EMAIL_RE.test(email)) {
+      setInvalid(emailInput, 'Please enter a valid email address.');
       return;
     }
 
@@ -75,29 +116,20 @@ if (form) {
     //     'Content-Type': 'application/json',
     //     'Accept': 'application/json',
     //   },
-    //   body: JSON.stringify({ email: value }),
+    //   body: JSON.stringify({ first_name: first, last_name: last, phone, email }),
     // })
-    //   .then(res => {
-    //     if (res.ok) {
-    //       showSuccess();
-    //     } else {
-    //       showNetworkError();
-    //     }
-    //   })
+    //   .then(res => res.ok ? showSuccess() : showNetworkError())
     //   .catch(() => showNetworkError());
     //
     // ─────────────────────────────────────────────────────────
 
-    // Simulated success (no backend yet)
     showSuccess();
   });
 }
 
 function showSuccess() {
-  successMsg.hidden  = false;
-  errorMsg.hidden    = true;
-  emailInput.value   = '';
-  emailInput.classList.remove('is-invalid');
+  successMsg.hidden = false;
+  form.querySelectorAll('.form-input').forEach(i => i.value = '');
   if (submitBtn) {
     submitBtn.disabled    = true;
     submitBtn.textContent = "You're In!";
