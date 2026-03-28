@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ruckus — Don't lose the night between bars." />
+  <title>Ruckus</title>
+
+  <noscript>
+    <style>
+      [data-animate] { opacity: 1 !important; transform: none !important; }
+    </style>
+  </noscript>
+
+  <!-- Preconnect for faster font load -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── HEADER ───────────────────────────────────────────── -->
+  <header class="site-header">
+    <a href="#hero" class="logo-link js-smooth-scroll" aria-label="Ruckus home">
+      <img src="ruckus_logo.png" alt="Ruckus" class="logo-img" />
+    </a>
+    <a href="#waitlist" class="btn btn--outline btn--sm js-smooth-scroll">Get Early Access</a>
+  </header>
+
+  <!-- ─── SECTION 1: HERO ─────────────────────────────────── -->
+  <section id="hero" class="section section--hero">
+    <div class="hero-bg-glow" aria-hidden="true"></div>
+    <div class="container hero-content">
+      <p class="hero-eyebrow">Nightlife, Simplified.</p>
+      <h1 class="hero-headline">The Night<br>Is Yours.</h1>
+      <p class="hero-sub">
+        Find where to go. See where your crew is heading.
+        Rate your favorite spots.
+      </p>
+      <a href="#waitlist" class="btn btn--primary btn--lg js-smooth-scroll">
+        Get Early Access
+      </a>
+    </div>
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span></span>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 2: ABOUT ─────────────────────────────────── -->
+  <section id="about" class="section section--about">
+    <div class="container about-inner">
+
+      <div class="about-copy" data-animate>
+        <blockquote class="about-quote">
+          "So many nights die between bars."
+        </blockquote>
+        <p class="about-body">
+          Ruckus ensures you don't lose momentum finding a place everyone agrees on.
+          One app to discover, decide, and go — together.
+        </p>
+
+      </div>
+
+      <div class="about-visual" data-animate>
+        <!--
+          To swap in a real image later, replace this entire div with:
+          <img src="app-screenshot.png" alt="Ruckus app preview" class="app-screenshot" />
+        -->
+        <div class="app-preview-placeholder" aria-label="App preview coming soon">
+          <div class="placeholder-inner">
+            <span class="placeholder-icon" aria-hidden="true">📱</span>
+            <span class="placeholder-label">App Preview Coming Soon</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── SECTION 3: WAITLIST ──────────────────────────────── -->
+  <section id="waitlist" class="section section--waitlist">
+    <div class="waitlist-bg-glow" aria-hidden="true"></div>
+    <div class="container waitlist-inner" data-animate>
+
+      <span class="badge">Early Access</span>
+      <h2 class="waitlist-headline">Founding Members Only.</h2>
+      <p class="waitlist-sub">
+        We're rolling out city by city. Join the waitlist now and lock in
+        your spot before we go public — founding members get exclusive perks.
+      </p>
+
+      <!--
+        TO WIRE UP A REAL BACKEND (Formspree — free, no server needed):
+        1. Sign up at https://formspree.io and create a new form
+        2. Change the form tag to:
+             <form id="waitlist-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        3. Remove the e.preventDefault() line in script.js
+        The rest of the markup stays the same.
+      -->
+      <form id="waitlist-form" class="waitlist-form" novalidate>
+        <div class="form-row">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-input"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+            aria-label="Email address"
+          />
+          <button type="submit" class="btn btn--primary">Claim My Spot</button>
+        </div>
+        <p class="form-success" id="form-success" aria-live="polite" hidden>
+          You're on the list. We'll reach out when Ruckus hits your city. 🙌
+        </p>
+        <p class="form-error" id="form-error" aria-live="polite" hidden>
+          Please enter a valid email address.
+        </p>
+      </form>
+
+      <p class="waitlist-reassurance">No spam. Just your invite when we launch in your city.</p>
+
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ───────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <img src="ruckus_logo.png" alt="Ruckus" class="footer-logo" />
+    <p class="footer-copy">&copy; 2026 Ruckus. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
