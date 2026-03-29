@@ -33,11 +33,10 @@
   <section id="hero" class="section section--hero">
     <div class="hero-bg-glow" aria-hidden="true"></div>
     <div class="container hero-content">
-      <p class="hero-eyebrow">Nightlife, Simplified.</p>
-      <h1 class="hero-headline">The Night<br>Is Yours.</h1>
+      <p class="hero-eyebrow">Your night, handled.</p>
+      <h1 class="hero-headline">Stop debating.<br>Start going.</h1>
       <p class="hero-sub">
-        Find where to go. See where your crew is heading.
-        Rate your favorite spots.
+        Ruckus tells your group exactly where to go tonight. Real-time vibe, lines, and cover — plus recs that get smarter the more you go out.
       </p>
       <a href="#waitlist" class="btn btn--primary btn--lg js-smooth-scroll">
         Get Early Access
@@ -57,8 +56,7 @@
           "So many nights die between bars."
         </blockquote>
         <p class="about-body">
-          Ruckus ensures you don't lose momentum finding a place everyone agrees on.
-          One app to discover, decide, and go — together.
+          Ruckus picks the next spot so your group doesn't have to. No endless scrolling. No group chat debates. Just go.
         </p>
 
       </div>
@@ -71,7 +69,7 @@
         <div class="app-preview-placeholder" aria-label="App preview coming soon">
           <div class="placeholder-inner">
             <span class="placeholder-icon" aria-hidden="true">📱</span>
-            <span class="placeholder-label">App Preview Coming Soon</span>
+            <span class="placeholder-label">See it in action soon.</span>
           </div>
         </div>
       </div>
@@ -85,10 +83,9 @@
     <div class="container waitlist-inner" data-animate>
 
       <span class="badge">Early Access</span>
-      <h2 class="waitlist-headline">Founding Members Only.</h2>
+      <h2 class="waitlist-headline">Get in early.</h2>
       <p class="waitlist-sub">
-        We're rolling out city by city. Join the waitlist now and lock in
-        your spot before we go public — founding members get exclusive perks.
+        We're launching city by city, starting with NYC. Drop your info and we'll let you know when it's your turn.
       </p>
 
       <!--
@@ -99,7 +96,7 @@
         3. Remove the e.preventDefault() line in script.js
         The rest of the markup stays the same.
       -->
-      <form id="waitlist-form" class="waitlist-form" novalidate>
+      <form id="waitlist-form" class="waitlist-form" action="https://formspree.io/f/mvzvkybb" method="POST" novalidate>
         <div class="form-row form-row--two">
           <input
             type="text"
@@ -146,15 +143,15 @@
           />
         </div>
         <div class="form-row form-row--submit">
-          <button type="submit" class="btn btn--primary btn--full">Claim My Spot</button>
+          <button type="submit" class="btn btn--primary btn--full">I'm in</button>
         </div>
         <p class="form-success" id="form-success" aria-live="polite" hidden>
-          You're on the list. We'll reach out when Ruckus hits your city. 🙌
+          You're in. We'll hit you up when Ruckus drops in your city.
         </p>
         <p class="form-error" id="form-error" aria-live="polite" hidden></p>
       </form>
 
-      <p class="waitlist-reassurance">No spam. Just your invite when we launch in your city.</p>
+      <p class="waitlist-reassurance">No spam. Just your invite.</p>
 
     </div>
   </section>

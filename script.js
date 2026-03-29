@@ -2,16 +2,7 @@
    RUCKUS — Landing Page Scripts
    ───────────────────────────────────────────────────────────── */
 
-/* ── 1. Cursor Glow ─────────────────────────────────────────── */
-const glow = document.createElement('div');
-glow.classList.add('cursor-glow');
-document.body.appendChild(glow);
-
-document.addEventListener('mousemove', e => {
-  glow.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
-});
-
-/* ── 2. Smooth Scroll ───────────────────────────────────────── */
+/* ── 1. Smooth Scroll ───────────────────────────────────────── */
 document.querySelectorAll('.js-smooth-scroll').forEach(link => {
   link.addEventListener('click', e => {
     const href = link.getAttribute('href');
@@ -79,7 +70,6 @@ function clearErrors() {
 
 if (form) {
   form.addEventListener('submit', e => {
-    e.preventDefault();
     clearErrors();
 
     const first = firstInput.value.trim();
@@ -87,42 +77,35 @@ if (form) {
     const phone = phoneInput.value.trim();
     const email = emailInput.value.trim();
 
+    // Validate first — if invalid, block submission
     if (!first) {
+      e.preventDefault();
       setInvalid(firstInput, 'First name is required.');
       return;
     }
     if (!last) {
+      e.preventDefault();
       setInvalid(lastInput, 'Last name is required.');
       return;
     }
     if (!phone) {
+      e.preventDefault();
       setInvalid(phoneInput, 'Phone number is required.');
       return;
     }
     if (!PHONE_RE.test(phone)) {
+      e.preventDefault();
       setInvalid(phoneInput, 'Please enter a valid phone number.');
       return;
     }
     if (email && !EMAIL_RE.test(email)) {
+      e.preventDefault();
       setInvalid(emailInput, 'Please enter a valid email address.');
       return;
     }
 
-    // ── TO WIRE UP FORMSPREE: Replace this block ─────────────
-    //
-    // fetch('https://formspree.io/f/YOUR_FORM_ID', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json',
-    //   },
-    //   body: JSON.stringify({ first_name: first, last_name: last, phone, email }),
-    // })
-    //   .then(res => res.ok ? showSuccess() : showNetworkError())
-    //   .catch(() => showNetworkError());
-    //
-    // ─────────────────────────────────────────────────────────
-
+    // Validation passed — Formspree handles the submission
+    // Show optimistic success UI before the page navigates
     showSuccess();
   });
 }
@@ -132,7 +115,7 @@ function showSuccess() {
   form.querySelectorAll('.form-input').forEach(i => i.value = '');
   if (submitBtn) {
     submitBtn.disabled    = true;
-    submitBtn.textContent = "You're In!";
+    submitBtn.textContent = "You're in!";
   }
 }
 
