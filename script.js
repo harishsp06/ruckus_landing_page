@@ -39,7 +39,7 @@ const observer = new IntersectionObserver(
 animatedEls.forEach(el => observer.observe(el));
 
 /* ── 4. Waitlist Form ───────────────────────────────────────── */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby-OwPFQSgePf92I0fWPT-D42Yo_lRUyViZTzebSrxjOOzjxYWP09YAcVPgylJOBJMwTQ/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx-EKHJV52BStx-Lzt1AD8KiUrJIxyWG4z5sjasaR1QskuoPKALJf_o8hmUwvyeTrUe5A/exec';
 
 const form        = document.getElementById('waitlist-form');
 const firstInput  = document.getElementById('first-name');
@@ -91,11 +91,16 @@ if (form) {
       submitBtn.textContent = 'Sending...';
     }
 
+    const params = new URLSearchParams();
+    params.append('first_name', first);
+    params.append('last_name', last);
+    params.append('phone', phone);
+    params.append('email', email);
+
     fetch(SHEETS_URL, {
       method: 'POST',
-      mode: 'no-cors', // Google Apps Script requires no-cors
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ first_name: first, last_name: last, phone, email }),
+      mode: 'no-cors',
+      body: params,
     })
       .then(() => showSuccess())
       .catch(() => {
