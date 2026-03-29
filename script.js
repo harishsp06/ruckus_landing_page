@@ -39,6 +39,8 @@ const observer = new IntersectionObserver(
 animatedEls.forEach(el => observer.observe(el));
 
 /* ── 4. Waitlist Form ───────────────────────────────────────── */
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby-OwPFQSgePf92I0fWPT-D42Yo_lRUyViZTzebSrxjOOzjxYWP09YAcVPgylJOBJMwTQ/exec';
+
 const form        = document.getElementById('waitlist-form');
 const firstInput  = document.getElementById('first-name');
 const lastInput   = document.getElementById('last-name');
@@ -49,7 +51,6 @@ const errorMsg    = document.getElementById('form-error');
 const submitBtn   = form ? form.querySelector('[type="submit"]') : null;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// Accepts digits, spaces, dashes, parens, +  — e.g. (312) 555-0100, +1 312 555 0100
 const PHONE_RE = /^[\d\s\-().+]{7,20}$/;
 
 function setInvalid(input, msg) {
@@ -70,6 +71,7 @@ function clearErrors() {
 
 if (form) {
   form.addEventListener('submit', e => {
+    e.preventDefault();
     clearErrors();
 
     const first = firstInput.value.trim();
@@ -77,36 +79,33 @@ if (form) {
     const phone = phoneInput.value.trim();
     const email = emailInput.value.trim();
 
-    // Validate first — if invalid, block submission
-    if (!first) {
-      e.preventDefault();
-      setInvalid(firstInput, 'First name is required.');
-      return;
-    }
-    if (!last) {
-      e.preventDefault();
-      setInvalid(lastInput, 'Last name is required.');
-      return;
-    }
-    if (!phone) {
-      e.preventDefault();
-      setInvalid(phoneInput, 'Phone number is required.');
-      return;
-    }
-    if (!PHONE_RE.test(phone)) {
-      e.preventDefault();
-      setInvalid(phoneInput, 'Please enter a valid phone number.');
-      return;
-    }
-    if (email && !EMAIL_RE.test(email)) {
-      e.preventDefault();
-      setInvalid(emailInput, 'Please enter a valid email address.');
-      return;
+    if (!first) { setInvalid(firstInput, 'First name is required.'); return; }
+    if (!last)  { setInvalid(lastInput,  'Last name is required.');  return; }
+    if (!phone) { setInvalid(phoneInput, 'Phone number is required.'); return; }
+    if (!PHONE_RE.test(phone)) { setInvalid(phoneInput, 'Please enter a valid phone number.'); return; }
+    if (email && !EMAIL_RE.test(email)) { setInvalid(emailInput, 'Please enter a valid email address.'); return; }
+
+    // Disable button while submitting
+    if (submitBtn) {
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Sending...';
     }
 
-    // Validation passed — Formspree handles the submission
-    // Show optimistic success UI before the page navigates
-    showSuccess();
+    fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Google Apps Script requires no-cors
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: first, last_name: last, phone, email }),
+    })
+      .then(() => showSuccess())
+      .catch(() => {
+        errorMsg.textContent = 'Something went wrong. Please try again.';
+        errorMsg.hidden = false;
+        if (submitBtn) {
+          submitBtn.disabled    = false;
+          submitBtn.textContent = "I'm in";
+        }
+      });
   });
 }
 
@@ -117,9 +116,4 @@ function showSuccess() {
     submitBtn.disabled    = true;
     submitBtn.textContent = "You're in!";
   }
-}
-
-function showNetworkError() {
-  errorMsg.textContent = 'Something went wrong. Please try again.';
-  errorMsg.hidden      = false;
 }
