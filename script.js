@@ -39,7 +39,7 @@ const observer = new IntersectionObserver(
 animatedEls.forEach(el => observer.observe(el));
 
 /* ── 4. Waitlist Form ───────────────────────────────────────── */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx-EKHJV52BStx-Lzt1AD8KiUrJIxyWG4z5sjasaR1QskuoPKALJf_o8hmUwvyeTrUe5A/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwOsuusg7veDslBtZbpgGq1jTiAgLfkiVGsXvOi0C_gpOtLc8bAqjLJkVIXtokOu5pK/exec';
 
 const form        = document.getElementById('waitlist-form');
 const firstInput  = document.getElementById('first-name');
