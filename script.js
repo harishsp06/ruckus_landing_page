@@ -51,7 +51,35 @@ const errorMsg    = document.getElementById('form-error');
 const submitBtn   = form ? form.querySelector('[type="submit"]') : null;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^[\d\s\-().+]{7,20}$/;
+// Exactly 10 digits once formatting is stripped
+const PHONE_RE = /^\(\d{3}\) \d{3}-\d{4}$/;
+
+/* ── Phone auto-formatter ───────────────────────────────────── */
+if (phoneInput) {
+  phoneInput.addEventListener('input', () => {
+    // Strip everything except digits
+    const digits = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    let formatted = '';
+    if (digits.length === 0) {
+      formatted = '';
+    } else if (digits.length <= 3) {
+      formatted = `(${digits}`;
+    } else if (digits.length <= 6) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    } else {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    phoneInput.value = formatted;
+  });
+
+  // Allow backspace to feel natural by not re-formatting on deletion
+  phoneInput.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && phoneInput.value.endsWith(') ')) {
+      e.preventDefault();
+      phoneInput.value = phoneInput.value.slice(0, -2);
+    }
+  });
+}
 
 function setInvalid(input, msg) {
   input.classList.add('is-invalid');
@@ -82,7 +110,7 @@ if (form) {
     if (!first) { setInvalid(firstInput, 'First name is required.'); return; }
     if (!last)  { setInvalid(lastInput,  'Last name is required.');  return; }
     if (!phone) { setInvalid(phoneInput, 'Phone number is required.'); return; }
-    if (!PHONE_RE.test(phone)) { setInvalid(phoneInput, 'Please enter a valid phone number.'); return; }
+    if (!PHONE_RE.test(phone)) { setInvalid(phoneInput, 'Please enter a 10-digit US number: (555) 555-5555'); return; }
     if (email && !EMAIL_RE.test(email)) { setInvalid(emailInput, 'Please enter a valid email address.'); return; }
 
     // Disable button while submitting

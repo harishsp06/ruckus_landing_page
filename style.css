@@ -239,8 +239,8 @@ a {
 }
 
 .logo-img {
-  height: 100px;
-  width: 120px;
+  height: 44px;
+  width: auto;
 }
 
 /* ── Hero Section ───────────────────────────────────────────── */
@@ -252,7 +252,7 @@ a {
   text-align: center;
   position: relative;
   overflow: hidden;
-  padding-top: calc(var(--space-xl) + 70px);
+  padding-top: calc(var(--space-xl) + 80px);
 }
 
 .hero-bg-glow {
