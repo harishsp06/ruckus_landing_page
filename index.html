@@ -1688,11 +1688,12 @@
         <input type="text"  id="wl-last"  class="form-input" placeholder="Last name"         required autocomplete="family-name">
       </div>
       <div class="form-row form-row--single">
-        <input type="tel"   id="wl-phone" class="form-input" placeholder="(555) 555-5555"    required autocomplete="tel">
+        <input type="tel"   id="wl-phone" class="form-input" placeholder="Phone (555) 555-5555" autocomplete="tel">
       </div>
       <div class="form-row form-row--single">
-        <input type="email" id="wl-email" class="form-input" placeholder="Email (optional)"           autocomplete="email">
+        <input type="email" id="wl-email" class="form-input" placeholder="Email"                autocomplete="email">
       </div>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:-2px;">Phone or email required</p>
       <p class="form-error" id="wl-error" hidden></p>
       <div class="form-row form-row--single" style="margin-top:4px;">
         <button type="submit" class="btn btn-primary btn-lg" id="wl-submit" style="width:100%;justify-content:center;">I'm in</button>
@@ -1847,8 +1848,8 @@
 
     if (!first) { wlSetInvalid(wlFirst, 'First name is required.'); return; }
     if (!last)  { wlSetInvalid(wlLast,  'Last name is required.');  return; }
-    if (!phone) { wlSetInvalid(wlPhone, 'Phone number is required.'); return; }
-    if (!PHONE_RE.test(phone)) { wlSetInvalid(wlPhone, 'Enter a 10-digit US number: (555) 555-5555'); return; }
+    if (!phone && !email) { wlSetInvalid(wlPhone, 'Please enter a phone number or email address.'); return; }
+    if (phone && !PHONE_RE.test(phone)) { wlSetInvalid(wlPhone, 'Enter a 10-digit US number: (555) 555-5555'); return; }
     if (email && !EMAIL_RE.test(email)) { wlSetInvalid(wlEmail, 'Enter a valid email address.'); return; }
 
     wlSubmit.disabled    = true;
