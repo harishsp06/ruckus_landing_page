@@ -1,167 +1,1904 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Ruckus — Don't lose the night between bars." />
-  <title>Ruckus</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RUCKUS — Your night, handled.</title>
+  <meta name="description" content="Real-time crowd intel, crew coordination, and a live city map. NYC nightlife, finally figured out. Launching summer 2026.">
 
-  <noscript>
-    <style>
-      [data-animate] { opacity: 1 !important; transform: none !important; }
-    </style>
-  </noscript>
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://ruckusapp.co">
+  <meta property="og:title"       content="RUCKUS — Your night, handled.">
+  <meta property="og:description" content="Real-time crowd intel, crew coordination, and a live city map. NYC nightlife, finally figured out.">
+  <meta property="og:image"       content="https://ruckusapp.co/og-image.jpg">
 
-  <!-- Preconnect for faster font load -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="RUCKUS — Your night, handled.">
+  <meta name="twitter:description" content="Real-time crowd intel, crew coordination, and a live city map. NYC nightlife, finally figured out.">
+  <meta name="twitter:image"       content="https://ruckusapp.co/og-image.jpg">
 
-  <link rel="stylesheet" href="style.css" />
+  <!-- Emoji favicon (placeholder) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥃</text></svg>">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Host+Grotesk:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Reset ───────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    img  { display: block; max-width: 100%; }
+    a    { text-decoration: none; color: inherit; }
+
+    /* ── Variables ───────────────────────────────────────────── */
+    :root {
+      --ink:         #07060A;
+      --ink-2:       #0E0C12;
+      --ink-3:       #18141C;
+      --orange:      #FF5E1A;
+      --orange-hot:  #FF7A2E;
+      --orange-soft: #FF9B55;
+      --pink:        #FF2E93;
+      --cream:       #FFF4DD;
+      --text:        #F3EFE6;
+      --muted:       #8F857A;
+      --line:        rgba(255,244,221,0.10);
+
+      --font-display: 'Lilita One', cursive;
+      --font-body:    'Host Grotesk', sans-serif;
+      --font-serif:   'Instrument Serif', serif;
+
+      --w: 1100px;
+      --px: clamp(20px, 5vw, 64px);
+    }
+
+    /* ── Base ────────────────────────────────────────────────── */
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      max-width: var(--w);
+      margin: 0 auto;
+      padding: 0 var(--px);
+    }
+
+    /* ── Grain overlay ───────────────────────────────────────── */
+    .grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.055;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 220px 220px;
+    }
+
+    /* ── Section label ───────────────────────────────────────── */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--orange);
+    }
+
+    /* ── Reveal animation ────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ══════════════════════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0 var(--px);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+    }
+    .nav.scrolled {
+      background: rgba(7,6,10,0.85);
+      border-color: var(--line);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo img {
+      height: 36px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .btn-sm { padding: 9px 20px; font-size: 13px; }
+    .btn-md { padding: 13px 28px; font-size: 15px; }
+    .btn-lg { padding: 16px 36px; font-size: 16px; }
+
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--orange-hot); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    .btn-ghost:hover { border-color: rgba(255,244,221,0.3); background: rgba(255,244,221,0.05); }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+      transform-origin: center;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile overlay */
+    .nav-mobile {
+      position: fixed;
+      inset: 64px 0 0;
+      background: var(--ink);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      transform: translateX(100%);
+      transition: transform 0.35s ease;
+    }
+    .nav-mobile.open { transform: none; }
+    .nav-mobile a {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--text);
+      transition: color 0.2s;
+    }
+    .nav-mobile a:hover { color: var(--orange); }
+
+    /* ══════════════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px var(--px) 80px;
+      overflow: hidden;
+    }
+
+    /* Club light orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+    }
+    .orb-1 {
+      top: -10%;
+      right: -5%;
+      width: 640px;
+      height: 640px;
+      background: radial-gradient(circle, rgba(255,94,26,0.18) 0%, transparent 70%);
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb-2 {
+      bottom: 0%;
+      left: -8%;
+      width: 540px;
+      height: 540px;
+      background: radial-gradient(circle, rgba(255,46,147,0.14) 0%, transparent 70%);
+      animation: float 11s ease-in-out infinite reverse;
+    }
+    .orb-3 {
+      top: 40%;
+      left: 40%;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(255,94,26,0.08) 0%, transparent 70%);
+      animation: float 14s ease-in-out infinite 3s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-40px) scale(1.04); }
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,94,26,0.12);
+      border: 1px solid rgba(255,94,26,0.3);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--orange-soft);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+
+    .hero-logo-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 28px;
+    }
+    .hero-logo-glow {
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(circle, rgba(255,94,26,0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: breathe 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.5; transform: scale(0.95); }
+      50%       { opacity: 1;   transform: scale(1.05); }
+    }
+    .hero-logo {
+      height: clamp(48px, 8vw, 72px);
+      width: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: clamp(52px, 8vw, 100px);
+      line-height: 1.0;
+      letter-spacing: -0.01em;
+      color: var(--cream);
+      margin-bottom: 24px;
+    }
+    .hero-h1 span { color: var(--orange); }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.65;
+      margin-bottom: 40px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-val {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--cream);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .stat-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--line);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       PROBLEM
+    ═══════════════════════════════════════════════════════════ */
+    .problem {
+      background: var(--ink-2);
+      padding: clamp(72px, 10vw, 120px) var(--px);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .problem-left h2 {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.05;
+      color: var(--cream);
+      margin-bottom: 32px;
+    }
+
+    .problem-quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(20px, 2.5vw, 27px);
+      color: var(--text);
+      line-height: 1.5;
+      border-left: 3px solid var(--orange);
+      padding-left: 24px;
+      margin-bottom: 40px;
+    }
+
+    .problem-items {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .problem-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .problem-icon {
+      font-size: 22px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .problem-item-body {}
+    .problem-item-q {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 2px;
+      text-decoration: line-through;
+      text-decoration-color: rgba(143,133,122,0.4);
+    }
+    .problem-item-a {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       FEATURES
+    ═══════════════════════════════════════════════════════════ */
+    .features {
+      padding: clamp(72px, 10vw, 120px) var(--px);
+    }
+
+    .feature {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-bottom: clamp(80px, 12vw, 140px);
+    }
+    .feature:last-child { margin-bottom: 0; }
+    .feature.flip { direction: rtl; }
+    .feature.flip > * { direction: ltr; }
+
+    .feature-text {}
+    .feature-h2 {
+      font-family: var(--font-display);
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.1;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+    .feature-body {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 28px;
+      max-width: 400px;
+    }
+    .feature-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .feature-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ink-3);
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      width: fit-content;
+    }
+    .feature-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--orange);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    .feature-pill .dot-green {
+      background: #34C759;
+    }
+
+    /* Phone frame */
+    .phone-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .phone {
+      width: 270px;
+      height: 560px;
+      background: var(--ink-2);
+      border-radius: 40px;
+      border: 1.5px solid rgba(255,244,221,0.14);
+      box-shadow:
+        0 0 0 7px var(--ink),
+        0 0 0 8px rgba(255,244,221,0.06),
+        0 40px 100px rgba(0,0,0,0.7),
+        0 0 60px rgba(255,94,26,0.07);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88px;
+      height: 26px;
+      background: var(--ink);
+      border-radius: 0 0 18px 18px;
+      z-index: 10;
+    }
+    .phone-screen {
+      height: 100%;
+      padding-top: 34px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Shared phone UI chrome ─────────────────────────────── */
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,59,48,0.15);
+      border: 1px solid rgba(255,59,48,0.3);
+      border-radius: 100px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #FF3B30;
+      letter-spacing: 0.06em;
+    }
+    .live-badge .red-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FF3B30;
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+
+    /* Tab bar used in Discover + Social screens */
+    .phone-tab-bar {
+      display: flex;
+      gap: 6px;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .phone-tab {
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .phone-tab.active {
+      background: var(--ink-3);
+      color: var(--text);
+    }
+
+    /* Bar row (shared: WtmScreen + DiscoverScreen) */
+    .pb-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .pb-emoji-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--ink-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .pb-info { flex: 1; overflow: hidden; }
+    .pb-name { font-size: 11px; font-weight: 600; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pb-meta { font-size: 9px; color: var(--muted); margin-top: 1px; text-transform: capitalize; }
+    .pb-price { font-size: 10px; color: var(--muted); font-weight: 600; flex-shrink: 0; }
+    .pb-chev  { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+    /* Phone 1: WtmScreen */
+    .wtm-hdr {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 13px 8px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .wtm-hdr-title { font-size: 13px; font-weight: 800; color: var(--cream); line-height: 1.2; }
+    .wtm-hdr-sub   { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+    .chip-row {
+      display: flex;
+      gap: 5px;
+      padding: 7px 13px;
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .chip {
+      padding: 3px 9px;
+      border-radius: 100px;
+      font-size: 9px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .chip.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+
+    /* Phone 2: SocialScreen */
+    .soc-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 13px 8px;
+      flex-shrink: 0;
+    }
+    .soc-hdr-title { font-size: 15px; font-weight: 800; color: var(--cream); }
+    .soc-new-btn {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--orange);
+      border-radius: 100px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .party-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .party-emoji { font-size: 22px; }
+    .party-info  { flex: 1; overflow: hidden; }
+    .party-name  { font-size: 11px; font-weight: 600; color: var(--cream); }
+    .party-meta  { font-size: 9px; color: var(--muted); margin-top: 1px; }
+    .party-status { font-size: 10px; font-weight: 600; flex-shrink: 0; }
+    .ps-active   { color: #34C759; }
+    .ps-planned  { color: var(--orange); }
+
+    .friend-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .friend-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--ink-3);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--muted);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .friend-av-online::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #34C759;
+      border: 1.5px solid var(--ink-2);
+    }
+    .friend-info    { flex: 1; overflow: hidden; }
+    .friend-name    { font-size: 11px; font-weight: 600; color: var(--cream); }
+    .friend-handle  { font-size: 9px; color: var(--muted); }
+    .friend-rating  { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+    .friend-rating-star { font-size: 9px; color: #FFD60A; }
+    .friend-rating-val  { font-size: 10px; font-weight: 600; color: var(--text); }
+
+    /* Phone 3: DiscoverScreen bottom sheet peek */
+    .bs-peek {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--ink-3);
+      border-radius: 14px 14px 0 0;
+      border-top: 1px solid var(--line);
+      padding: 7px 13px 10px;
+    }
+    .bs-handle {
+      width: 30px;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255,244,221,0.15);
+      margin: 0 auto 7px;
+    }
+    .bs-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bs-emoji { font-size: 20px; }
+    .bs-info  { flex: 1; overflow: hidden; }
+    .bs-name  { font-size: 11px; font-weight: 600; color: var(--cream); }
+    .bs-meta  { font-size: 9px; color: var(--muted); margin-top: 1px; text-transform: capitalize; }
+    .bs-view  {
+      background: var(--orange);
+      border-radius: 100px;
+      padding: 5px 11px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Phone 3: Live Map */
+    .p3-screen {
+      flex: 1;
+      background: #0E0D12;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Faux roads */
+    .p3-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(0deg, rgba(255,244,221,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,244,221,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .map-pin {
+      position: absolute;
+      border-radius: 50%;
+    }
+    .map-pin::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      animation: pulse-ring 2.2s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%   { opacity: 0.6; transform: scale(0.8); }
+      100% { opacity: 0;   transform: scale(2.2); }
+    }
+    .mp-orange { background: var(--orange); }
+    .mp-orange::before { border: 1.5px solid var(--orange); }
+    .mp-pink   { background: var(--pink); }
+    .mp-pink::before { border: 1.5px solid var(--pink); animation-delay: 0.6s; }
+    .mp-muted  { background: #4A4560; }
+    .mp-muted::before { border: 1px solid #4A4560; animation-delay: 1.2s; }
+
+    .p3-map-label {
+      position: absolute;
+      background: rgba(7,6,10,0.85);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 3px 7px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--cream);
+      white-space: nowrap;
+    }
+    .p3-filters {
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      overflow: hidden;
+      border-top: 1px solid var(--line);
+      background: var(--ink-2);
+    }
+    .p3-chip {
+      padding: 5px 10px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .p3-chip.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1;   transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.75); }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       MARQUEE
+    ═══════════════════════════════════════════════════════════ */
+    .marquee-band {
+      background: var(--ink-2);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 20px 0;
+      overflow: hidden;
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee-scroll 22s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .marquee-item {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1;
+      white-space: nowrap;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .marquee-item.filled  { color: var(--cream); }
+    .marquee-item.outline {
+      -webkit-text-stroke: 1.5px var(--cream);
+      color: transparent;
+    }
+    .marquee-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       CITIES
+    ═══════════════════════════════════════════════════════════ */
+    .cities {
+      padding: clamp(72px, 10vw, 120px) var(--px);
+      background: var(--ink-2);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cities-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .cities-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 52px);
+      color: var(--cream);
+      margin-bottom: 12px;
+    }
+    .cities-header p {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    .cities-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+
+    .city-card {
+      background: var(--ink-3);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .city-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,244,221,0.2);
+    }
+    .city-card.active {
+      border-color: var(--orange);
+      background: rgba(255,94,26,0.06);
+    }
+    .city-card.active:hover {
+      border-color: var(--orange-hot);
+    }
+
+    .city-flag { font-size: 28px; }
+    .city-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--cream);
+    }
+    .city-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 100px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      width: fit-content;
+    }
+    .badge-launch {
+      background: rgba(255,94,26,0.15);
+      border: 1px solid rgba(255,94,26,0.3);
+      color: var(--orange-soft);
+    }
+    .badge-soon {
+      background: var(--ink);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       WAITLIST
+    ═══════════════════════════════════════════════════════════ */
+    .waitlist {
+      padding: clamp(80px, 12vw, 140px) var(--px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .waitlist-orb {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(255,94,26,0.10) 0%, transparent 65%);
+      pointer-events: none;
+      border-radius: 50%;
+      animation: breathe 6s ease-in-out infinite;
+    }
+
+    .waitlist-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .waitlist h2 {
+      font-family: var(--font-display);
+      font-size: clamp(38px, 6vw, 68px);
+      color: var(--cream);
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .waitlist-sub {
+      font-size: 17px;
+      color: var(--muted);
+      margin-bottom: 36px;
+    }
+
+    .waitlist-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 440px;
+      margin: 0 auto 24px;
+    }
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+    .form-row--single { flex-direction: column; }
+    .form-input {
+      flex: 1;
+      height: 50px;
+      background: var(--ink-3);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0 18px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    .form-input::placeholder { color: var(--muted); }
+    .form-input:focus { border-color: rgba(255,94,26,0.5); }
+    .form-input.is-invalid { border-color: rgba(255,59,48,0.6); }
+
+    .form-error {
+      font-size: 13px;
+      color: #FF3B30;
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    .waitlist-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .waitlist-success.show { display: flex; }
+    .waitlist-success-emoji { font-size: 48px; }
+    .waitlist-success-msg {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .waitlist-success-sub {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .waitlist-note {
+      font-size: 13px;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════════ */
+    footer {
+      background: var(--ink-2);
+      border-top: 1px solid var(--line);
+      padding: 56px var(--px) 40px;
+    }
+    .footer-inner {
+      max-width: var(--w);
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .footer-brand {}
+    .footer-logo {
+      height: 32px;
+      width: auto;
+      margin-bottom: 10px;
+    }
+    .footer-tagline {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .footer-links-group {
+      display: flex;
+      gap: 56px;
+      flex-wrap: wrap;
+    }
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .footer-links-col-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .footer-links-col a {
+      font-size: 14px;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .footer-links-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-copy {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .footer-copy span { color: var(--orange); }
+
+    .footer-socials {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-socials a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .footer-socials a:hover {
+      color: var(--text);
+      border-color: rgba(255,244,221,0.25);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════════════ */
+    @media (max-width: 960px) {
+      .problem-grid { grid-template-columns: 1fr; gap: 40px; }
+      .feature       { grid-template-columns: 1fr; gap: 40px; }
+      .feature.flip  { direction: ltr; }
+      .phone-wrap    { order: -1; }
+      .cities-grid   { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links     { display: none; }
+      .nav-hamburger { display: flex; }
+      .cities-grid   { grid-template-columns: repeat(2, 1fr); }
+      .waitlist-form { flex-direction: column; }
+      .footer-top    { flex-direction: column; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 480px) {
+      .cities-grid { grid-template-columns: 1fr 1fr; }
+      .hero-stats  { gap: 20px; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ─── HEADER ───────────────────────────────────────────── -->
-  <header class="site-header">
-    <a href="#hero" class="logo-link js-smooth-scroll" aria-label="Ruckus home">
-      <img src="ruckus_logo.png" alt="Ruckus" class="logo-img" />
-    </a>
-    <a href="#waitlist" class="btn btn--outline btn--sm js-smooth-scroll">Get Early Access</a>
-  </header>
+<!-- Grain overlay -->
+<div class="grain" aria-hidden="true"></div>
 
-  <!-- ─── SECTION 1: HERO ─────────────────────────────────── -->
-  <section id="hero" class="section section--hero">
-    <div class="hero-bg-glow" aria-hidden="true"></div>
-    <div class="container hero-content">
-      <p class="hero-eyebrow">Your night, handled.</p>
-      <h1 class="hero-headline">Stop debating.<br>Start going.</h1>
-      <p class="hero-sub">
-        Ruckus tells your group exactly where to go tonight. Real-time vibe plus recs that get smarter the more you go out.
-      </p>
-      <a href="#waitlist" class="btn btn--primary btn--lg js-smooth-scroll">
-        Get Early Access
-      </a>
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">
+    <img src="./ruckus-logo.png" alt="RUCKUS" class="nav-logo-img">
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#cities">Cities</a></li>
+    <li><a href="#waitlist">Waitlist</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <a href="#waitlist" class="btn btn-primary btn-sm">Join waitlist</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile nav overlay -->
+<div class="nav-mobile" id="nav-mobile" aria-hidden="true">
+  <a href="#features" class="nav-mobile-link">Features</a>
+  <a href="#cities"   class="nav-mobile-link">Cities</a>
+  <a href="#waitlist" class="nav-mobile-link">Waitlist</a>
+  <a href="#waitlist" class="btn btn-primary btn-md">Join waitlist</a>
+</div>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <span class="live-dot"></span>
+      Launching NYC &mdash; Summer 2026
     </div>
-    <div class="hero-scroll-hint" aria-hidden="true">
-      <span></span>
+
+    <div class="hero-logo-wrap">
+      <div class="hero-logo-glow" aria-hidden="true"></div>
+      <img src="./ruckus-logo.png" alt="RUCKUS" class="hero-logo">
     </div>
-  </section>
 
-  <!-- ─── SECTION 2: ABOUT ─────────────────────────────────── -->
-  <section id="about" class="section section--about">
-    <div class="container about-inner">
+    <h1 class="hero-h1">
+      Your night,<br><span>handled.</span>
+    </h1>
+    <p class="hero-sub">
+      Real-time crowd intel, crew coordination, and a live city map.
+      NYC nightlife, finally figured out.
+    </p>
 
-      <div class="about-copy" data-animate>
-        <blockquote class="about-quote">
-          "So many nights die between bars."
-        </blockquote>
-        <p class="about-body">
-          Ruckus picks the next spot so your group doesn't have to. No endless scrolling. No group chat debates. Just go.
-        </p>
+    <div class="hero-ctas">
+      <a href="#waitlist" class="btn btn-primary btn-lg">Join the waitlist</a>
+      <a href="#features" class="btn btn-ghost btn-lg">See how it works</a>
+    </div>
 
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-val">2.4K+</span>
+        <span class="stat-label">On the waitlist</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-val">340+</span>
+        <span class="stat-label">NYC venues mapped</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-val">5</span>
+        <span class="stat-label">Cities at launch</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROBLEM ───────────────────────────────────────────────── -->
+<section class="problem" id="problem">
+  <div class="wrap">
+    <div class="problem-grid">
+
+      <div class="problem-left reveal">
+        <div class="section-label">The problem</div>
+        <h2>Going out<br>shouldn't be this hard.</h2>
       </div>
 
-      <div class="about-visual" data-animate>
-        <!--
-          To swap in a real image later, replace this entire div with:
-          <img src="app-screenshot.png" alt="Ruckus app preview" class="app-screenshot" />
-        -->
-        <div class="app-preview-placeholder" aria-label="App preview coming soon">
-          <div class="placeholder-inner">
-            <span class="placeholder-icon" aria-hidden="true">📱</span>
-            <span class="placeholder-label">See it in action soon.</span>
+      <div class="problem-right reveal reveal-delay-1">
+        <p class="problem-quote">
+          "You shouldn't need three group chats and a Google Doc to figure out where to get drinks."
+        </p>
+
+        <div class="problem-items">
+          <div class="problem-item">
+            <span class="problem-icon">🚶</span>
+            <div class="problem-item-body">
+              <div class="problem-item-q">You never know if it's packed until you're there.</div>
+              <div class="problem-item-a">Live crowd levels, updated every 60 seconds.</div>
+            </div>
+          </div>
+          <div class="problem-item">
+            <span class="problem-icon">💬</span>
+            <div class="problem-item-body">
+              <div class="problem-item-q">The group chat becomes 47 unanswered messages.</div>
+              <div class="problem-item-a">One place to decide. Drop a pin and go.</div>
+            </div>
+          </div>
+          <div class="problem-item">
+            <span class="problem-icon">🗺️</span>
+            <div class="problem-item-body">
+              <div class="problem-item-q">You don't know what's good in a neighborhood.</div>
+              <div class="problem-item-a">The whole city mapped and pinging live.</div>
+            </div>
           </div>
         </div>
       </div>
 
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ─── SECTION 3: WAITLIST ──────────────────────────────── -->
-  <section id="waitlist" class="section section--waitlist">
-    <div class="waitlist-bg-glow" aria-hidden="true"></div>
-    <div class="container waitlist-inner" data-animate>
+<!-- ── FEATURES ──────────────────────────────────────────────── -->
+<section class="features" id="features">
+  <div class="wrap">
 
-      <span class="badge">Early Access</span>
-      <h2 class="waitlist-headline">Get in early.</h2>
-      <p class="waitlist-sub">
-        Join the Ruckus crew and make going out simple.
-      </p>
-
-      <!--
-        TO WIRE UP A REAL BACKEND (Formspree — free, no server needed):
-        1. Sign up at https://formspree.io and create a new form
-        2. Change the form tag to:
-             <form id="waitlist-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-        3. Remove the e.preventDefault() line in script.js
-        The rest of the markup stays the same.
-      -->
-      <form id="waitlist-form" class="waitlist-form" novalidate>
-        <div class="form-row form-row--two">
-          <input
-            type="text"
-            id="first-name"
-            name="first_name"
-            class="form-input"
-            placeholder="First name"
-            required
-            autocomplete="given-name"
-            aria-label="First name"
-          />
-          <input
-            type="text"
-            id="last-name"
-            name="last_name"
-            class="form-input"
-            placeholder="Last name"
-            required
-            autocomplete="family-name"
-            aria-label="Last name"
-          />
-        </div>
-        <div class="form-row form-row--single">
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            class="form-input"
-            placeholder="(555) 555-5555"
-            required
-            autocomplete="tel"
-            aria-label="Phone number"
-          />
-        </div>
-        <div class="form-row form-row--single">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            class="form-input"
-            placeholder="Email (optional)"
-            autocomplete="email"
-            aria-label="Email address"
-          />
-        </div>
-        <div class="form-row form-row--submit">
-          <button type="submit" class="btn btn--primary btn--full">I'm in</button>
-        </div>
-        <p class="form-success" id="form-success" aria-live="polite" hidden>
-          You're in. We'll hit you up when Ruckus drops in your city.
+    <!-- Feature 1: Crowd Intel -->
+    <div class="feature reveal">
+      <div class="feature-text">
+        <div class="section-label">01 — Know before you go</div>
+        <h2 class="feature-h2">Live crowd intel, updated every 60 seconds.</h2>
+        <p class="feature-body">
+          Stop showing up to a dead bar or a two-hour line. RUCKUS pulls real-time crowd levels,
+          wait times, and vibe checks from people who are actually there.
         </p>
-        <p class="form-error" id="form-error" aria-live="polite" hidden></p>
-      </form>
+        <div class="feature-detail">
+          <div class="feature-pill">
+            <span class="dot"></span> Crowd levels updating live
+          </div>
+          <div class="feature-pill">
+            <span class="dot" style="background:var(--pink)"></span> Hot venue alerts
+          </div>
+          <div class="feature-pill">
+            <span class="dot dot-green"></span> Wait time estimates
+          </div>
+        </div>
+      </div>
 
-      <p class="waitlist-reassurance">No spam. Just your invite.</p>
-
+      <div class="phone-wrap reveal reveal-delay-2">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <!-- WtmScreen header -->
+            <div class="wtm-hdr">
+              <div>
+                <div class="wtm-hdr-title">What's the move?</div>
+                <div class="wtm-hdr-sub">Bars near you tonight</div>
+              </div>
+              <span class="live-badge"><span class="red-dot"></span>LIVE</span>
+            </div>
+            <!-- Filter chips -->
+            <div class="chip-row">
+              <span class="chip active">All</span>
+              <span class="chip">Nearby</span>
+              <span class="chip">Open now</span>
+              <span class="chip">Cocktails</span>
+              <span class="chip">Rooftops</span>
+            </div>
+            <!-- Bar list -->
+            <div class="pb-row">
+              <div class="pb-emoji-box">🍸</div>
+              <div class="pb-info">
+                <div class="pb-name">Employees Only</div>
+                <div class="pb-meta">West Village &middot; cocktail bar</div>
+              </div>
+              <span class="pb-price">$$$</span>
+              <span class="pb-chev">›</span>
+            </div>
+            <div class="pb-row">
+              <div class="pb-emoji-box">🎧</div>
+              <div class="pb-info">
+                <div class="pb-name">House of Yes</div>
+                <div class="pb-meta">Bushwick &middot; nightclub</div>
+              </div>
+              <span class="pb-chev">›</span>
+            </div>
+            <div class="pb-row">
+              <div class="pb-emoji-box">🌃</div>
+              <div class="pb-info">
+                <div class="pb-name">230 Fifth Rooftop</div>
+                <div class="pb-meta">Midtown &middot; rooftop</div>
+              </div>
+              <span class="pb-price">$$</span>
+              <span class="pb-chev">›</span>
+            </div>
+            <div class="pb-row">
+              <div class="pb-emoji-box">🍺</div>
+              <div class="pb-info">
+                <div class="pb-name">The Dead Rabbit</div>
+                <div class="pb-meta">Financial District &middot; cocktail bar</div>
+              </div>
+              <span class="pb-price">$$</span>
+              <span class="pb-chev">›</span>
+            </div>
+            <div class="pb-row">
+              <div class="pb-emoji-box">🎤</div>
+              <div class="pb-info">
+                <div class="pb-name">Brooklyn Bowl</div>
+                <div class="pb-meta">Williamsburg &middot; live music</div>
+              </div>
+              <span class="pb-chev">›</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <!-- ─── FOOTER ───────────────────────────────────────────── -->
-  <footer class="site-footer">
-    <img src="ruckus_logo.png" alt="Ruckus" class="footer-logo" />
-    <p class="footer-copy">&copy; 2026 Ruckus. All rights reserved.</p>
-  </footer>
+    <!-- Feature 2: Crew (flipped) -->
+    <div class="feature flip reveal">
+      <div class="feature-text">
+        <div class="section-label">02 — Get your crew together</div>
+        <h2 class="feature-h2">One link to plan the whole night. No more group chat chaos.</h2>
+        <p class="feature-body">
+          Create a night, drop your crew in, vote on spots, share pins. Works for two people or twenty.
+          No app required for your friends (but they'll want it).
+        </p>
+        <div class="feature-detail">
+          <div class="feature-pill">
+            <span class="dot dot-green"></span> See who's online and omw
+          </div>
+          <div class="feature-pill">
+            <span class="dot"></span> Venue voting, no drama
+          </div>
+          <div class="feature-pill">
+            <span class="dot" style="background:var(--pink)"></span> Drop a pin, not an address
+          </div>
+        </div>
+      </div>
 
-  <script src="script.js"></script>
+      <div class="phone-wrap reveal reveal-delay-2">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <!-- SocialScreen header -->
+            <div class="soc-hdr">
+              <span class="soc-hdr-title">Social</span>
+              <span class="soc-new-btn">＋ New party</span>
+            </div>
+            <!-- Tabs -->
+            <div class="phone-tab-bar">
+              <span class="phone-tab active">Parties (2)</span>
+              <span class="phone-tab">Friends (5)</span>
+            </div>
+            <!-- Party cards -->
+            <div class="party-row">
+              <span class="party-emoji">🎉</span>
+              <div class="party-info">
+                <div class="party-name">Friday Squad</div>
+                <div class="party-meta">Sat, Apr 19 &middot; House of Yes</div>
+              </div>
+              <span class="party-status ps-active">active</span>
+            </div>
+            <div class="party-row">
+              <span class="party-emoji">🎉</span>
+              <div class="party-info">
+                <div class="party-name">Birthday Bash</div>
+                <div class="party-meta">Fri, Apr 25 &middot; TBD</div>
+              </div>
+              <span class="party-status ps-planned">planned</span>
+            </div>
+            <!-- Friends section -->
+            <div style="padding:7px 13px 5px;border-bottom:1px solid var(--line);flex-shrink:0;">
+              <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Your crew</div>
+            </div>
+            <div class="friend-row">
+              <div class="friend-av friend-av-online">JD</div>
+              <div class="friend-info">
+                <div class="friend-name">Jordan Davis</div>
+                <div class="friend-handle">@jordand</div>
+              </div>
+              <div class="friend-rating">
+                <span class="friend-rating-star">★</span>
+                <span class="friend-rating-val">4</span>
+              </div>
+            </div>
+            <div class="friend-row">
+              <div class="friend-av friend-av-online">AK</div>
+              <div class="friend-info">
+                <div class="friend-name">Alex Kim</div>
+                <div class="friend-handle">@alexk</div>
+              </div>
+            </div>
+            <div class="friend-row">
+              <div class="friend-av">MS</div>
+              <div class="friend-info">
+                <div class="friend-name">Marcus S.</div>
+                <div class="friend-handle">@marcuss</div>
+              </div>
+              <div class="friend-rating">
+                <span class="friend-rating-star">★</span>
+                <span class="friend-rating-val">5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 3: Live Map -->
+    <div class="feature reveal">
+      <div class="feature-text">
+        <div class="section-label">03 — See the whole city</div>
+        <h2 class="feature-h2">The entire city, pinging live.</h2>
+        <p class="feature-body">
+          Every bar, club, rooftop, and dive in NYC on one real-time map.
+          Filter by vibe, neighborhood, or what's actually popping right now.
+          Hot spots glow louder.
+        </p>
+        <div class="feature-detail">
+          <div class="feature-pill">
+            <span class="dot"></span> Live heat — hot spots glow brighter
+          </div>
+          <div class="feature-pill">
+            <span class="dot dot-green"></span> Filter by vibe or neighborhood
+          </div>
+          <div class="feature-pill">
+            <span class="dot" style="background:var(--pink)"></span> See where your friends are
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-wrap reveal reveal-delay-2">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <!-- DiscoverScreen tab toggle -->
+            <div class="phone-tab-bar">
+              <span class="phone-tab">Featured</span>
+              <span class="phone-tab active">Map</span>
+            </div>
+            <!-- Map fills remaining space -->
+            <div class="p3-screen" style="flex:1; position:relative;">
+              <!-- Faux map grid via CSS ::before -->
+
+              <!-- Orange (hot) pins -->
+              <div class="map-pin mp-orange" style="width:14px;height:14px;top:28%;left:35%;"></div>
+              <div class="map-pin mp-orange" style="width:12px;height:12px;top:55%;left:62%;"></div>
+              <div class="map-pin mp-orange" style="width:16px;height:16px;top:38%;left:54%;"></div>
+
+              <!-- Pink (very hot) pin -->
+              <div class="map-pin mp-pink" style="width:18px;height:18px;top:22%;left:42%;"></div>
+              <div class="map-pin mp-pink" style="width:10px;height:10px;top:48%;left:72%;"></div>
+
+              <!-- Muted (quiet) pins -->
+              <div class="map-pin mp-muted" style="width:9px;height:9px;top:60%;left:25%;"></div>
+              <div class="map-pin mp-muted" style="width:9px;height:9px;top:32%;left:22%;"></div>
+              <div class="map-pin mp-muted" style="width:9px;height:9px;top:65%;left:68%;"></div>
+
+              <!-- Map labels -->
+              <div class="p3-map-label" style="top:14%;left:44%;">House of Yes 🔥</div>
+              <div class="p3-map-label" style="top:41%;left:33%;">Employees Only</div>
+
+              <!-- User location dot -->
+              <div style="position:absolute;top:52%;left:48%;width:12px;height:12px;border-radius:50%;background:#3B82F6;border:2px solid #fff;box-shadow:0 0 0 4px rgba(59,130,246,0.25);transform:translate(-50%,-50%);"></div>
+
+              <!-- BottomSheet peek (25% snap) -->
+              <div class="bs-peek">
+                <div class="bs-handle"></div>
+                <div class="bs-bar">
+                  <span class="bs-emoji">🎧</span>
+                  <div class="bs-info">
+                    <div class="bs-name">House of Yes</div>
+                    <div class="bs-meta">Bushwick &middot; nightclub</div>
+                  </div>
+                  <span class="bs-view">View</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── MARQUEE ───────────────────────────────────────────────── -->
+<div class="marquee-band" aria-hidden="true">
+  <div class="marquee-track">
+    <!-- Set 1 -->
+    <div class="marquee-item filled">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+    <div class="marquee-item outline">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+    <div class="marquee-item filled">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+    <div class="marquee-item outline">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+    <!-- Set 2 (duplicate for seamless loop) -->
+    <div class="marquee-item filled">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+    <div class="marquee-item outline">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+    <div class="marquee-item filled">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+    <div class="marquee-item outline">MAKE A RUCKUS</div>
+    <div class="marquee-item"><span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- ── CITIES ────────────────────────────────────────────────── -->
+<section class="cities" id="cities">
+  <div class="wrap">
+    <div class="cities-header reveal">
+      <div class="section-label" style="justify-content:center;">Rollout</div>
+      <h2>Starting in NYC.<br>Spreading fast.</h2>
+      <p>One city at a time, done right.</p>
+    </div>
+
+    <div class="cities-grid reveal reveal-delay-1">
+      <div class="city-card active">
+        <span class="city-flag">🗽</span>
+        <span class="city-name">New York</span>
+        <span class="city-badge badge-launch">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block;"></span>
+          Summer 2026
+        </span>
+      </div>
+      <div class="city-card">
+        <span class="city-flag">🌴</span>
+        <span class="city-name">Los Angeles</span>
+        <span class="city-badge badge-soon">Coming soon</span>
+      </div>
+      <div class="city-card">
+        <span class="city-flag">🌊</span>
+        <span class="city-name">Miami</span>
+        <span class="city-badge badge-soon">Coming soon</span>
+      </div>
+      <div class="city-card">
+        <span class="city-flag">🌬️</span>
+        <span class="city-name">Chicago</span>
+        <span class="city-badge badge-soon">Coming soon</span>
+      </div>
+      <div class="city-card">
+        <span class="city-flag">🤠</span>
+        <span class="city-name">Austin</span>
+        <span class="city-badge badge-soon">Coming soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WAITLIST ───────────────────────────────────────────────── -->
+<section class="waitlist" id="waitlist">
+  <div class="waitlist-orb" aria-hidden="true"></div>
+  <div class="waitlist-inner">
+    <div class="reveal">
+      <div class="section-label" style="justify-content:center;">Early access</div>
+      <h2>Get in early.</h2>
+      <p class="waitlist-sub">First access when RUCKUS drops in NYC. No spam, just the launch.</p>
+    </div>
+
+    <form class="waitlist-form reveal reveal-delay-1" id="waitlist-form" novalidate>
+      <div class="form-row">
+        <input type="text"  id="wl-first" class="form-input" placeholder="First name"        required autocomplete="given-name">
+        <input type="text"  id="wl-last"  class="form-input" placeholder="Last name"         required autocomplete="family-name">
+      </div>
+      <div class="form-row form-row--single">
+        <input type="tel"   id="wl-phone" class="form-input" placeholder="(555) 555-5555"    required autocomplete="tel">
+      </div>
+      <div class="form-row form-row--single">
+        <input type="email" id="wl-email" class="form-input" placeholder="Email (optional)"           autocomplete="email">
+      </div>
+      <p class="form-error" id="wl-error" hidden></p>
+      <div class="form-row form-row--single" style="margin-top:4px;">
+        <button type="submit" class="btn btn-primary btn-lg" id="wl-submit" style="width:100%;justify-content:center;">I'm in</button>
+      </div>
+    </form>
+
+    <div class="waitlist-success" id="waitlist-success" aria-live="polite">
+      <span class="waitlist-success-emoji">🎉</span>
+      <span class="waitlist-success-msg">You're on the list.</span>
+      <span class="waitlist-success-sub">We'll hit you up before launch. See you this summer.</span>
+    </div>
+
+    <p class="waitlist-note reveal reveal-delay-2">No spam. Just your invite.</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="./ruckus-logo.png" alt="RUCKUS" class="footer-logo">
+        <p class="footer-tagline">Launching summer 2026 in NYC.</p>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-links-col">
+          <span class="footer-links-col-title">Company</span>
+          <a href="#">About</a>
+          <a href="#">Press</a>
+          <a href="#">Careers</a>
+        </div>
+        <div class="footer-links-col">
+          <span class="footer-links-col-title">Legal</span>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+        <div class="footer-links-col">
+          <span class="footer-links-col-title">Product</span>
+          <a href="#features">Features</a>
+          <a href="#cities">Cities</a>
+          <a href="#waitlist">Waitlist</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">
+        &copy; 2026 <span>RUCKUS</span>. All rights reserved.
+      </p>
+      <div class="footer-socials">
+        <!-- Instagram -->
+        <a href="#" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+        </a>
+        <!-- TikTok -->
+        <a href="#" aria-label="TikTok">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.37 6.37 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.72a4.86 4.86 0 0 1-1.02-.03z"/>
+          </svg>
+        </a>
+        <!-- X / Twitter -->
+        <a href="#" aria-label="X (Twitter)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Nav scroll effect ────────────────────────────────────────
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  // ── Mobile nav toggle ─────────────────────────────────────
+  const hamburger   = document.getElementById('hamburger');
+  const navMobile   = document.getElementById('nav-mobile');
+  const mobileLinks = navMobile.querySelectorAll('a');
+
+  function toggleMenu(open) {
+    hamburger.classList.toggle('open', open);
+    navMobile.classList.toggle('open', open);
+    navMobile.setAttribute('aria-hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  hamburger.addEventListener('click', () => {
+    toggleMenu(!navMobile.classList.contains('open'));
+  });
+
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', () => toggleMenu(false));
+  });
+
+  // ── Waitlist form (Google Sheets via Apps Script) ─────────
+  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwOsuusg7veDslBtZbpgGq1jTiAgLfkiVGsXvOi0C_gpOtLc8bAqjLJkVIXtokOu5pK/exec';
+
+  const wlForm    = document.getElementById('waitlist-form');
+  const wlSuccess = document.getElementById('waitlist-success');
+  const wlFirst   = document.getElementById('wl-first');
+  const wlLast    = document.getElementById('wl-last');
+  const wlPhone   = document.getElementById('wl-phone');
+  const wlEmail   = document.getElementById('wl-email');
+  const wlError   = document.getElementById('wl-error');
+  const wlSubmit  = document.getElementById('wl-submit');
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const PHONE_RE = /^\(\d{3}\) \d{3}-\d{4}$/;
+
+  // Phone auto-formatter
+  wlPhone.addEventListener('input', () => {
+    const digits = wlPhone.value.replace(/\D/g, '').slice(0, 10);
+    if      (digits.length === 0) wlPhone.value = '';
+    else if (digits.length <= 3)  wlPhone.value = `(${digits}`;
+    else if (digits.length <= 6)  wlPhone.value = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+    else                          wlPhone.value = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  });
+  wlPhone.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && wlPhone.value.endsWith(') ')) {
+      e.preventDefault();
+      wlPhone.value = wlPhone.value.slice(0, -2);
+    }
+  });
+
+  function wlSetInvalid(input, msg) {
+    input.classList.add('is-invalid');
+    wlError.textContent = msg;
+    wlError.hidden = false;
+    input.focus();
+  }
+  function wlClearErrors() {
+    [wlFirst, wlLast, wlPhone, wlEmail].forEach(i => i.classList.remove('is-invalid'));
+    wlError.hidden = true;
+    wlError.textContent = '';
+  }
+
+  wlForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    wlClearErrors();
+
+    const first = wlFirst.value.trim();
+    const last  = wlLast.value.trim();
+    const phone = wlPhone.value.trim();
+    const email = wlEmail.value.trim();
+
+    if (!first) { wlSetInvalid(wlFirst, 'First name is required.'); return; }
+    if (!last)  { wlSetInvalid(wlLast,  'Last name is required.');  return; }
+    if (!phone) { wlSetInvalid(wlPhone, 'Phone number is required.'); return; }
+    if (!PHONE_RE.test(phone)) { wlSetInvalid(wlPhone, 'Enter a 10-digit US number: (555) 555-5555'); return; }
+    if (email && !EMAIL_RE.test(email)) { wlSetInvalid(wlEmail, 'Enter a valid email address.'); return; }
+
+    wlSubmit.disabled    = true;
+    wlSubmit.textContent = 'Sending...';
+
+    const params = new URLSearchParams();
+    params.append('first_name', first);
+    params.append('last_name',  last);
+    params.append('phone',      phone);
+    params.append('email',      email);
+
+    fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: params })
+      .then(() => {
+        wlForm.style.display = 'none';
+        wlSuccess.classList.add('show');
+      })
+      .catch(() => {
+        wlError.textContent = 'Something went wrong. Please try again.';
+        wlError.hidden = false;
+        wlSubmit.disabled    = false;
+        wlSubmit.textContent = "I'm in";
+      });
+  });
+
+  // ── Reveal on scroll ──────────────────────────────────────
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  );
+  reveals.forEach(el => observer.observe(el));
+
+  // ── Smooth scroll for anchor links ───────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', (e) => {
+      const target = document.querySelector(anchor.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
