@@ -251,7 +251,7 @@
 
     /* Crowd illustration band at bottom of hero */
     .hero-crowd {
-      position: absolute; bottom: -18%; left: 0; right: 0;
+      position: absolute; bottom: -26%; left: 0; right: 0;
       width: 100%; pointer-events: none; z-index: 2;
       display: flex; justify-content: center; align-items: flex-end;
       overflow: hidden;
@@ -291,7 +291,7 @@
       border-radius: 100px; padding: 6px 16px;
       font-size: 11px; font-weight: 700; color: var(--orange-soft);
       letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 28px;
-      margin-top: 120px;
+      margin-top: 60px;
     }
     .live-dot {
       width: 7px; height: 7px; border-radius: 50%; background: var(--orange);
@@ -722,16 +722,16 @@
     [data-theme="light"] .m-tabbar { background: rgba(255,248,239,0.94); border-top-color: rgba(0,0,0,0.06); }
 
     /* HERO — mobile */
-    body.is-mobile .hero { min-height: var(--mob-hero-h, 85svh) !important; height: var(--mob-hero-h, 85svh) !important; padding: 0; overflow: hidden; }
-    body.is-mobile .hero-center { padding-top: 62px; padding-bottom: 0; }
+    body.is-mobile .hero { min-height: var(--mob-hero-h, 80svh) !important; height: var(--mob-hero-h, 80svh) !important; padding: 0; overflow: hidden; }
+    body.is-mobile .hero-center { padding-top: 54px; padding-bottom: 0; }
     body.is-mobile .hero-eyebrow {
       font-size: 10px; padding: 4px 10px; letter-spacing: 0.1em;
-      margin: 0 auto 6px;
+      margin: 0 auto 4px;
     }
     body.is-mobile .hero-main-logo {
-      width: 62vw !important; height: auto !important; max-width: 240px !important;
+      width: 72vw !important; height: auto !important; max-width: 278px !important;
       aspect-ratio: 1 / 1 !important;
-      margin: 2px 0 6px !important;
+      margin: 0 0 4px !important;
     }
     body.is-mobile .hero-tagline {
       margin-top: 0 !important; font-size: 13px; line-height: 1.4;
@@ -1467,7 +1467,7 @@
     if (!document.body.classList.contains('is-mobile')) return;
     const vp = window.visualViewport;
     const h = vp ? vp.height : window.innerHeight;
-    document.documentElement.style.setProperty('--mob-hero-h', Math.round(h * 0.88) + 'px');
+    document.documentElement.style.setProperty('--mob-hero-h', Math.round(h * 0.82) + 'px');
   }
   fitHero();
   (window.visualViewport || window).addEventListener('resize', fitHero, { passive: true });
