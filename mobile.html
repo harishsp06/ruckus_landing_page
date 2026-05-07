@@ -583,12 +583,12 @@
     .m-tabbar { display: none; }
     body.is-mobile .m-tabbar { display: none !important; }
 
-    body.is-mobile .hero { min-height: 90svh !important; height: 90svh !important; padding: 0; overflow: hidden; }
-    body.is-mobile .hero-center { padding-top: 68px; padding-bottom: 0; }
-    body.is-mobile .hero-eyebrow { font-size: 10px; padding: 4px 10px; letter-spacing: 0.1em; margin: 0 auto 10px; }
+    body.is-mobile .hero { min-height: var(--mob-hero-h, 85svh) !important; height: var(--mob-hero-h, 85svh) !important; padding: 0; overflow: hidden; }
+    body.is-mobile .hero-center { padding-top: 62px; padding-bottom: 0; }
+    body.is-mobile .hero-eyebrow { font-size: 10px; padding: 4px 10px; letter-spacing: 0.1em; margin: 0 auto 6px; }
     body.is-mobile .hero-main-logo {
       width: 62vw !important; height: auto !important; max-width: 240px !important;
-      aspect-ratio: 1 / 1 !important; margin: 4px 0 10px !important;
+      aspect-ratio: 1 / 1 !important; margin: 2px 0 6px !important;
     }
     body.is-mobile .hero-tagline { margin-top: 0 !important; font-size: 13px; line-height: 1.4; padding: 0 28px; margin-bottom: 0; }
     body.is-mobile .hero-tagline-line1 { transform: none !important; }
@@ -991,6 +991,15 @@
   }
   applyTheme();
   setInterval(applyTheme, 60000);
+
+  /* ── Hero: real viewport height ─────────────────────────────── */
+  function fitHero() {
+    const vp = window.visualViewport;
+    const h = vp ? vp.height : window.innerHeight;
+    document.documentElement.style.setProperty('--mob-hero-h', Math.round(h * 0.88) + 'px');
+  }
+  fitHero();
+  (window.visualViewport || window).addEventListener('resize', fitHero, { passive: true });
 
   /* ── Mobile feature rail dots ───────────────────────────────── */
   const rail = document.getElementById('m-feature-rail');
