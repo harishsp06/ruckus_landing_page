@@ -200,18 +200,6 @@
     .hero-cta { padding: 15px 34px; font-size: 15px; }
     .hero-cta-note { font-size: 11px; color: var(--muted); }
 
-    /* Stats row — floated above crowd */
-    .hero-stats {
-      position: absolute; bottom: 0; left: 0; right: 0; z-index: 6;
-      padding: 0 var(--px) 32px;
-      display: flex; justify-content: center; align-items: flex-end; gap: 0;
-    }
-    .stat-item {
-      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-    }
-    .stat-val   { font-family: var(--font-display); font-size: 22px; color: var(--cream); line-height: 1; }
-    .stat-label { font-size: 10px; color: var(--muted); font-weight: 500; }
-    .stat-sep   { width: 1px; height: 32px; background: var(--line); flex-shrink: 0; margin: 0 6px; align-self: center; }
 
     /* Gradient fade over crowd bottom */
     .hero-fade {
@@ -538,24 +526,6 @@
     <!-- Gradient fade over crowd -->
     <div class="hero-fade" aria-hidden="true"></div>
 
-    <!-- Stats above crowd -->
-    <div class="hero-stats" id="hero-stats">
-      <div class="stat-item">
-        <span class="stat-val">2.4K+</span>
-        <span class="stat-label">On waitlist</span>
-      </div>
-      <div class="stat-sep"></div>
-      <div class="stat-item">
-        <span class="stat-val">340+</span>
-        <span class="stat-label">NYC venues</span>
-      </div>
-      <div class="stat-sep"></div>
-      <div class="stat-item">
-        <span class="stat-val">5</span>
-        <span class="stat-label">Cities at launch</span>
-      </div>
-    </div>
-
     <!-- Crowd illustration — rendered via invert+screen for dark bg -->
     <div class="hero-crowd" id="hero-crowd">
       <img src="./public/crowd_illustration.png" alt="" aria-hidden="true">
@@ -854,7 +824,6 @@
     tl.from('#hero-tagline', { opacity: 0, y: 22, duration: 0.7, ease: 'power3.out' }, '-=0.45');
     tl.from('#hero-cta',     { opacity: 0, y: 16, scale: 0.96, duration: 0.6, ease: 'back.out(1.4)' }, '-=0.35');
     tl.from('#hero-crowd',   { opacity: 0, y: 60, duration: 1.3, ease: 'power3.out' }, '-=0.7');
-    tl.from('#hero-stats',   { opacity: 0, y: 20, duration: 0.7, ease: 'power3.out' }, '-=0.9');
 
     // Crowd parallax
     ScrollTrigger.create({
