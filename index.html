@@ -740,7 +740,7 @@
     body.is-mobile .hero-tagline-line1 { transform: none !important; }
     body.is-mobile .hero-tagline em { transform: none !important; font-size: 13px; }
     body.is-mobile .hero-crowd {
-      position: absolute !important; left: 0; right: 0; top: 65%; bottom: auto;
+      position: absolute !important; left: 0; right: 0; bottom: 0; top: auto;
       width: 100% !important; height: auto !important;
       opacity: 0.95;
     }
@@ -1470,23 +1470,42 @@
     document.documentElement.style.setProperty('--mob-hero-h', Math.round(h * 0.82) + 'px');
   }
 
-  /* ── Crowd: always anchored below tagline, never overlaps ───── */
+  /* ── Crowd positioning ──────────────────────────────────────── */
   function positionCrowd() {
     const hero  = document.querySelector('.hero');
     const em    = document.querySelector('.hero-tagline em');
     const crowd = document.querySelector('.hero-crowd');
     if (!hero || !em || !crowd) return;
-    const top = Math.round(em.getBoundingClientRect().bottom - hero.getBoundingClientRect().top) + 8;
-    crowd.style.top    = top + 'px';
-    crowd.style.bottom = 'auto';
+    const textBottom = Math.round(em.getBoundingClientRect().bottom - hero.getBoundingClientRect().top);
+
+    if (document.body.classList.contains('is-mobile')) {
+      /* Mobile: crowd anchored to hero bottom (CSS bottom:0).
+         If the crowd image would climb above the tagline, expand
+         --mob-hero-h so there's always 8px of clearance. */
+      crowd.style.top    = 'auto';
+      crowd.style.bottom = '0';
+      const img = crowd.querySelector('img');
+      if (img && img.naturalWidth) {
+        const crowdH = Math.round(crowd.offsetWidth * img.naturalHeight / img.naturalWidth);
+        const needed = textBottom + 8 + crowdH;
+        const vp   = window.visualViewport;
+        const base = Math.round((vp ? vp.height : window.innerHeight) * 0.82);
+        document.documentElement.style.setProperty('--mob-hero-h', Math.max(base, needed) + 'px');
+      }
+    } else {
+      /* Desktop: pin crowd top just below tagline text. */
+      crowd.style.top    = (textBottom + 8) + 'px';
+      crowd.style.bottom = 'auto';
+    }
   }
 
   fitHero();
   requestAnimationFrame(positionCrowd);
   document.fonts.ready.then(positionCrowd);
+  const crowdImg = document.querySelector('.hero-crowd img');
+  if (crowdImg && !crowdImg.complete) crowdImg.addEventListener('load', positionCrowd, { once: true });
   (window.visualViewport || window).addEventListener('resize', () => {
-    fitHero();
-    requestAnimationFrame(positionCrowd);
+    fitHero(); requestAnimationFrame(positionCrowd);
   }, { passive: true });
   window.addEventListener('resize', () => requestAnimationFrame(positionCrowd), { passive: true });
 

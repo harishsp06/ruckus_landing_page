@@ -593,7 +593,7 @@
     body.is-mobile .hero-tagline { margin-top: 0 !important; font-size: 13px; line-height: 1.4; padding: 0 28px; margin-bottom: 0; }
     body.is-mobile .hero-tagline-line1 { transform: none !important; }
     body.is-mobile .hero-tagline em { transform: none !important; font-size: 13px; }
-    body.is-mobile .hero-crowd { position: absolute !important; left: 0; right: 0; top: 65%; bottom: auto; width: 100% !important; height: auto !important; opacity: 0.95; }
+    body.is-mobile .hero-crowd { position: absolute !important; left: 0; right: 0; bottom: 0; top: auto; width: 100% !important; height: auto !important; opacity: 0.95; }
     body.is-mobile .hero-crowd img { width: 100% !important; height: auto !important; display: block; }
     body.is-mobile .hero-floor { height: 14vh; }
     body.is-mobile .beam { filter: blur(28px); }
@@ -999,23 +999,34 @@
     document.documentElement.style.setProperty('--mob-hero-h', Math.round(h * 0.82) + 'px');
   }
 
-  /* ── Crowd: always anchored below tagline, never overlaps ───── */
+  /* ── Crowd positioning ──────────────────────────────────────── */
   function positionCrowd() {
     const hero  = document.querySelector('.hero');
     const em    = document.querySelector('.hero-tagline em');
     const crowd = document.querySelector('.hero-crowd');
     if (!hero || !em || !crowd) return;
-    const top = Math.round(em.getBoundingClientRect().bottom - hero.getBoundingClientRect().top) + 8;
-    crowd.style.top    = top + 'px';
-    crowd.style.bottom = 'auto';
+    const textBottom = Math.round(em.getBoundingClientRect().bottom - hero.getBoundingClientRect().top);
+    /* Mobile: crowd anchored to hero bottom (CSS bottom:0).
+       Expand --mob-hero-h if crowd image would climb above tagline. */
+    crowd.style.top    = 'auto';
+    crowd.style.bottom = '0';
+    const img = crowd.querySelector('img');
+    if (img && img.naturalWidth) {
+      const crowdH = Math.round(crowd.offsetWidth * img.naturalHeight / img.naturalWidth);
+      const needed = textBottom + 8 + crowdH;
+      const vp   = window.visualViewport;
+      const base = Math.round((vp ? vp.height : window.innerHeight) * 0.82);
+      document.documentElement.style.setProperty('--mob-hero-h', Math.max(base, needed) + 'px');
+    }
   }
 
   fitHero();
   requestAnimationFrame(positionCrowd);
   document.fonts.ready.then(positionCrowd);
+  const crowdImg = document.querySelector('.hero-crowd img');
+  if (crowdImg && !crowdImg.complete) crowdImg.addEventListener('load', positionCrowd, { once: true });
   (window.visualViewport || window).addEventListener('resize', () => {
-    fitHero();
-    requestAnimationFrame(positionCrowd);
+    fitHero(); requestAnimationFrame(positionCrowd);
   }, { passive: true });
 
   /* ── Mobile feature rail dots ───────────────────────────────── */
