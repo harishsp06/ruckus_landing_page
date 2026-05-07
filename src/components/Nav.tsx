@@ -32,7 +32,7 @@ export default function Nav() {
         style={{ opacity: 0 }}
       >
         <a href="#" className="nav-logo">
-          <Image src="/ruckus_logo_white.png" alt="RUCKUS" width={100} height={40} style={{ height: 40, width: 'auto' }} />
+          <Image src="/ruckus_logo_white.png" alt="RUCKUS" width={130} height={52} style={{ height: 52, width: 'auto' }} />
         </a>
         <ul className="nav-links">
           <li><a href="#problem">The Problem</a></li>
