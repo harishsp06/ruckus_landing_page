@@ -37,9 +37,9 @@ export default function Footer() {
               src="/ruckus_logo_white.png"
               alt="RUCKUS"
               className="footer-logo"
-              width={150}
-              height={60}
-              style={{ height: 60, width: 'auto' }}
+              width={300}
+              height={120}
+              style={{ height: 120, width: 'auto' }}
             />
             <p className="footer-tagline">Your night, handled.</p>
           </div>
